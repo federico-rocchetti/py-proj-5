@@ -16,20 +16,42 @@ def homepage():
 
     return render_template('homepage.html')
 
-@app.route('/movies')
-def all_movies():
-    """View all movies."""
+@app.route('/users', methods=["POST"])
+def register_user():
+    """Create new user."""
+    
+    email = request.form.get("email")
+    password = request.form.get("password")
 
-    movies = crud.get_movies()
+    user = crud.get_user_by_email(email)
 
-    return render_template("all_movies.html", movies = movies)
+    if user:
+        flash("User already exists. Please use another email address.")
+    else:
+        user = crud.create_user(email, password)
+        db.session.add(user)
+        db.session.commit()
+        flash("Account created! Please log in.")
+    
+    return redirect("/")
 
-@app.route('/movies/<movie_id>')
-def show_movie(movie_id):
-    """Show details on a particular movie."""
+@app.route("/login", methods=["POST"])
+def process_login():
+    """Process User Login."""
 
-    movie = crud.get_movie_by_id(movie_id)
-    return render_template("movie_details.html", movie = movie)
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    user = crud.get_user_by_email(email)
+
+    if not user or user.password != password:
+        flash("The email or password you entered was incorrect.")
+    else:
+        #Store user email in session to log in.
+        session["user_email"] = user.email
+        flash(f"Welcome back, {user.email}!")
+    
+    return redirect("/")
 
 @app.route('/users')
 def all_users():
@@ -46,6 +68,21 @@ def show_user(user_id):
     user = crud.get_user_by_id(user_id)
 
     return render_template("user_details.html", user = user)
+
+@app.route('/movies')
+def all_movies():
+    """View all movies."""
+
+    movies = crud.get_movies()
+
+    return render_template("all_movies.html", movies = movies)
+
+@app.route('/movies/<movie_id>')
+def show_movie(movie_id):
+    """Show details on a particular movie."""
+
+    movie = crud.get_movie_by_id(movie_id)
+    return render_template("movie_details.html", movie = movie)
 
 if __name__ == "__main__":
     connect_to_db(app)
