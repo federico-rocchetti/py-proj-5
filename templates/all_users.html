@@ -3,10 +3,10 @@
 {% block title %}All users{% endblock %}
 
 {% block body %}
-<h1>All users:</h1>
-    <ul>
+<h1 class="main-header">All users:</h1>
+    <ul class="list">
         {% for user in users %}
-        <li>
+        <li class="list-item">
             <a href="/users/{{user.user_id }}">
                 {{ user.email }}
             </a>

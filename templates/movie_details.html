@@ -3,13 +3,13 @@
 {% block title %} {{ movie.title }} - Details {% endblock %}
 
 {% block body %}
-<h1>{{ movie.title }}</h1>
+<h1 class="main-header">{{ movie.title }}</h1>
 <p>
     {{ movie.overview }}
 </p>
 
 {% if session.get('user_email') %}
-<h2>Rate this movie:</h2>
+<h2 class="sub-header">Rate this movie:</h2>
 <form action="/movies/{{ movie.movie_id }}/ratings", method="POST">
     <p>
         Rating:
